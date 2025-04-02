@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock with Stopwatch and Alarm</title>
+    <!-- Add Roboto font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Real-time Clock -->
+        <div id="clock" class="card">
+            <h1 id="time"></h1>
+        </div>
+
+        <!-- Stopwatch -->
+        <div id="stopwatch" class="card">
+            <h2>Stopwatch</h2>
+            <p id="stopwatch-display">00:00:00</p>
+            <button id="start-stopwatch" onclick="toggleStopwatch()">Start</button>
+            <button id="reset-stopwatch" onclick="resetStopwatch()">Reset</button>
+        </div>
+
+        <!-- Alarm -->
+        <div id="alarm" class="card">
+            <h2>Set Alarm</h2>
+            <input type="time" id="alarm-time" />
+            <button onclick="setAlarm()">Set Alarm</button>
+            <p id="alarm-message"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

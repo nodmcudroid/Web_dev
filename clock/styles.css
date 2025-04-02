@@ -1,0 +1,183 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+@font-face {
+    font-family: 'Robinson';
+    src: url('fonts/Robinson.ttf') format('truetype'); /* Update the path if needed */
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    font-family: 'Robinson', sans-serif;
+    background: linear-gradient(135deg, #00bcd4, #2196f3, #9c27b0, #4caf50); /* vibrant gradient */
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite; /* animation for background gradient */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Wave design on the left side */
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: url('https://cdn.pixabay.com/photo/2021/07/16/06/29/abstract-6472854_960_720.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: 1;
+}
+
+/* Card container */
+.card {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    z-index: 2;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+h1, h2, p {
+    color: white;
+    animation: textAnimation 1s ease-in-out infinite alternate;
+}
+
+h1 {
+    font-size: 80px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+#stopwatch, #alarm {
+    margin-top: 20px;
+}
+
+button {
+    background: linear-gradient(145deg, #e91e63, #ff4081); /* bright pink gradient */
+    border: none;
+    padding: 14px 30px;
+    font-size: 18px;
+    margin: 10px 0;
+    border-radius: 30px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #f50057;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+input[type="time"] {
+    font-size: 20px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    margin: 10px 0;
+    background: #f0f4ff;
+    transition: border 0.3s ease;
+}
+
+input[type="time"]:focus {
+    outline: none;
+    border: 2px solid #ff4081;
+}
+
+#stopwatch-display {
+    font-size: 50px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+}
+
+#alarm-message {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #ff4081;
+}
+
+/* Gradient background animation */
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Text animation: 'Snack' effect */
+@keyframes textAnimation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Neumorphism inspired elements */
+input[type="time"], button {
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.7);
+}
+
+input[type="time"]:focus, button:active {
+    box-shadow: inset 4px 4px 6px rgba(0, 0, 0, 0.1), inset -4px -4px 6px rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 60px;
+    }
+
+    #stopwatch-display {
+        font-size: 40px;
+    }
+}
