@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giant Clock</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1E3A8A, #6D28D9, #E11D48, #10B981); /* Vibrant gradient */
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .clock {
+            font-size: 6rem; /* Font size for the clock */
+            font-weight: bold;
+            color: #fff; /* White text for contrast */
+            text-align: center;
+
+            /* Rectangular box with rounded corners */
+            background: rgba(255, 255, 255, 0.1); /* Slightly lighter translucent box color */
+            border-radius: 20px; /* Rounded corners */
+            padding: 20px 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+        }
+
+        /* Wave design on the left */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, #0FF, #1E3A8A);
+            clip-path: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
+            opacity: 0.9;
+            z-index: -1;
+        }
+
+        /* Gradient animation */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <span id="hours">00</span>:
+        <span id="minutes">00</span>:
+        <span id="seconds">00</span>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+
+        // Initialize the clock immediately on page load
+        updateClock();
+    </script>
+</body>
+</html>

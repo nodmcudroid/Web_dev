@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Monoton', cursive;
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #333;
+      gap: 15px;
+    }
+
+    .login-title i {
+      color: #ff4081;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #2575fc;
+      outline: none;
+    }
+
+    .btn-signin {
+      width: 100%;
+      padding: 12px;
+      background-color: #2575fc;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-signin:hover {
+      background-color: #1a5edb;
+    }
+
+    .forgot-password {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+
+    .signup-link {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .signup-link a {
+      color: red;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 500px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-title">
+      <i class="fas fa-volume-up"></i>
+      LOGIN
+      <i class="fas fa-heart"></i>
+    </div>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" class="btn-signin">Sign In</button>
+      <a href="#" class="forgot-password">Forgot Password?</a>
+    </form>
+    <div class="signup-link">
+      <a href="#">Sign up</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        alert('Please fill out both username and password.');
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
