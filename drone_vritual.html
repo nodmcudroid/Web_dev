@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Controller Virtual Test Environment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f0f23, #1a1a3a);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        h2 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .sensor-box {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .sensor-box h3 {
+            color: #ffff00;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .sensor-value {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        
+        .attitude-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .attitude-indicator {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #00ff00;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            position: relative;
+            background: radial-gradient(circle, #001100, #000000);
+        }
+        
+        .horizon-line {
+            width: 100%;
+            height: 2px;
+            background: #00ff00;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform-origin: center;
+            transition: transform 0.1s;
+        }
+        
+        .aircraft-symbol {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffff00;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .control-group label {
+            display: block;
+            color: #ffff00;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #00ff00;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .motor-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .motor {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            border-radius: 5px;
+        }
+        
+        .motor-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .motor-level {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            transition: width 0.1s;
+        }
+        
+        .log-area {
+            background: #000;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            font-size: 11px;
+            margin-top: 20px;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 255, 0.1);
+            border: 1px solid #0000ff;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .armed {
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .disarmed {
+            color: #00ff00;
+        }
+        
+        .button {
+            background: #333;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .emergency {
+            background: #ff0000;
+            border-color: #ff0000;
+            color: white;
+        }
+        
+        .emergency:hover {
+            background: #fff;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <h2>Flight Controller Simulator</h2>
+            
+            <div class="sensor-grid">
+                <div class="sensor-box">
+                    <h3>IMU (MPU6050)</h3>
+                    <div class="sensor-value">
+                        <span>Roll:</span>
+                        <span id="roll">0.0°</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Pitch:</span>
+                        <span id="pitch">0.0°</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Yaw:</span>
+                        <span id="yaw">0.0°</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Gyro X:</span>
+                        <span id="gyroX">0.0°/s</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Gyro Y:</span>
+                        <span id="gyroY">0.0°/s</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Gyro Z:</span>
+                        <span id="gyroZ">0.0°/s</span>
+                    </div>
+                </div>
+                
+                <div class="sensor-box">
+                    <h3>GPS (NEO-8M)</h3>
+                    <div class="sensor-value">
+                        <span>Lat:</span>
+                        <span id="latitude">0.000000</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Lon:</span>
+                        <span id="longitude">0.000000</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Alt:</span>
+                        <span id="gpsAlt">0.0m</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Speed:</span>
+                        <span id="speed">0.0m/s</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Satellites:</span>
+                        <span id="satellites">0</span>
+                    </div>
+                </div>
+                
+                <div class="sensor-box">
+                    <h3>Barometer (BMP280)</h3>
+                    <div class="sensor-value">
+                        <span>Pressure:</span>
+                        <span id="pressure">1013.25 hPa</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Temperature:</span>
+                        <span id="temperature">25.0°C</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Altitude:</span>
+                        <span id="baroAlt">0.0m</span>
+                    </div>
+                </div>
+                
+                <div class="sensor-box">
+                    <h3>Receiver (FlySky)</h3>
+                    <div class="sensor-value">
+                        <span>Throttle:</span>
+                        <span id="throttleVal">1000μs</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Aileron:</span>
+                        <span id="aileronVal">1500μs</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Elevator:</span>
+                        <span id="elevatorVal">1500μs</span>
+                    </div>
+                    <div class="sensor-value">
+                        <span>Rudder:</span>
+                        <span id="rudderVal">1500μs</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="attitude-display">
+                <h3>3D Drone Visualization</h3>
+                <div id="droneCanvas" style="width: 100%; height: 300px; border: 2px solid #00ff00; border-radius: 10px; background: linear-gradient(135deg, #001122, #000000); position: relative; overflow: hidden;">
+                    <canvas id="drone3d" width="400" height="300"></canvas>
+                </div>
+                <div style="margin-top: 10px; text-align: center; font-size: 12px;">
+                    <span style="color: #ff0000;">● Motor 1 (FR)</span>
+                    <span style="color: #00ff00; margin-left: 20px;">● Motor 2 (FL)</span>
+                    <span style="color: #ffff00; margin-left: 20px;">● Motor 3 (RL)</span>
+                    <span style="color: #ff00ff; margin-left: 20px;">● Motor 4 (RR)</span>
+                </div>
+            </div>
+            
+            <div class="attitude-display">
+                <h3>Traditional Attitude Indicator</h3>
+                <div class="attitude-indicator">
+                    <div class="horizon-line" id="horizonLine"></div>
+                    <div class="aircraft-symbol">✈</div>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <div class="status-item">
+                    <div>Status:</div>
+                    <div id="armStatus" class="disarmed">DISARMED</div>
+                </div>
+                <div class="status-item">
+                    <div>Mode:</div>
+                    <div id="flightMode">STABILIZE</div>
+                </div>
+                <div class="status-item">
+                    <div>Loop:</div>
+                    <div id="loopFreq">100Hz</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Virtual Remote Control</h2>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="throttle">Throttle</label>
+                    <input type="range" id="throttle" class="slider" min="1000" max="2000" value="1000">
+                </div>
+                <div class="control-group">
+                    <label for="aileron">Aileron (Roll)</label>
+                    <input type="range" id="aileron" class="slider" min="1000" max="2000" value="1500">
+                </div>
+                <div class="control-group">
+                    <label for="elevator">Elevator (Pitch)</label>
+                    <input type="range" id="elevator" class="slider" min="1000" max="2000" value="1500">
+                </div>
+                <div class="control-group">
+                    <label for="rudder">Rudder (Yaw)</label>
+                    <input type="range" id="rudder" class="slider" min="1000" max="2000" value="1500">
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="button" onclick="armDisarm()">ARM/DISARM</button>
+                <button class="button" onclick="changeMode()">CHANGE MODE</button>
+                <button class="button emergency" onclick="emergency()">EMERGENCY</button>
+            </div>
+            
+            <h3>Motor Outputs</h3>
+            <div class="motor-display">
+                <div class="motor">
+                    <div>Motor 1 (FR)</div>
+                    <div class="motor-bar">
+                        <div class="motor-level" id="motor1" style="width: 0%"></div>
+                    </div>
+                    <span id="motor1Val">1000μs</span>
+                </div>
+                <div class="motor">
+                    <div>Motor 2 (FL)</div>
+                    <div class="motor-bar">
+                        <div class="motor-level" id="motor2" style="width: 0%"></div>
+                    </div>
+                    <span id="motor2Val">1000μs</span>
+                </div>
+                <div class="motor">
+                    <div>Motor 3 (RL)</div>
+                    <div class="motor-bar">
+                        <div class="motor-level" id="motor3" style="width: 0%"></div>
+                    </div>
+                    <span id="motor3Val">1000μs</span>
+                </div>
+                <div class="motor">
+                    <div>Motor 4 (RR)</div>
+                    <div class="motor-bar">
+                        <div class="motor-level" id="motor4" style="width: 0%"></div>
+                    </div>
+                    <span id="motor4Val">1000μs</span>
+                </div>
+            </div>
+            
+            <div class="log-area" id="logArea">
+                <div style="color: #00ffff;">Flight Controller Virtual Test Log</div>
+                <div>Initializing sensors...</div>
+                <div>MPU6050: OK</div>
+                <div>GPS NEO-8M: OK</div>
+                <div>BMP280: OK</div>
+                <div>FlySky Receiver: OK</div>
+                <div>System Ready</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Flight controller simulation variables
+        let flightData = {
+            roll: 0, pitch: 0, yaw: 0,
+            gyroX: 0, gyroY: 0, gyroZ: 0,
+            latitude: 23.8103, longitude: 90.4125, // Dhaka coordinates
+            altitude: 10, speed: 0, satellites: 8,
+            pressure: 1013.25, temperature: 25, baroAlt: 10,
+            throttle: 1000, aileron: 1500, elevator: 1500, rudder: 1500,
+            armed: false, mode: 'STABILIZE'
+        };
+        
+        // 3D Drone Visualization
+        let canvas, ctx;
+        let droneSize = 60;
+        let centerX, centerY;
+        
+        let motors = {m1: 1000, m2: 1000, m3: 1000, m4: 1000};
+        let pid = {roll: 0, pitch: 0, yaw: 0};
+        let modes = ['STABILIZE', 'ALTITUDE_HOLD', 'POSITION_HOLD', 'RTL'];
+        let currentModeIndex = 0;
+
+        // PID controller simulation
+        class PIDController {
+            constructor(kp, ki, kd) {
+                this.kp = kp;
+                this.ki = ki;
+                this.kd = kd;
+                this.previousError = 0;
+                this.integral = 0;
+            }
+            
+            calculate(setpoint, input, dt) {
+                let error = setpoint - input;
+                this.integral += error * dt;
+                this.integral = Math.max(-100, Math.min(100, this.integral)); // Anti-windup
+                
+                let derivative = (error - this.previousError) / dt;
+                this.previousError = error;
+                
+                return this.kp * error + this.ki * this.integral + this.kd * derivative;
+            }
+        }
+        
+        let rollPID = new PIDController(1.0, 0.1, 0.05);
+        let pitchPID = new PIDController(1.0, 0.1, 0.05);
+        let yawPID = new PIDController(2.0, 0.1, 0.1);
+
+        // Initialize 3D drone visualization
+        function initDroneVisualization() {
+            canvas = document.getElementById('drone3d');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            const container = document.getElementById('droneCanvas');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
+        }
+
+        // Draw 3D-like drone representation
+        function drawDrone() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Save context for transformations
+            ctx.save();
+            
+            // Move to center
+            ctx.translate(centerX, centerY);
+            
+            // Apply rotations (convert degrees to radians)
+            let rollRad = (flightData.roll * Math.PI) / 180;
+            let pitchRad = (flightData.pitch * Math.PI) / 180;
+            let yawRad = (flightData.yaw * Math.PI) / 180;
+            
+            // Apply yaw rotation
+            ctx.rotate(yawRad);
+            
+            // Create 3D effect with pitch and roll
+            let scaleX = Math.cos(rollRad);
+            let scaleY = Math.cos(pitchRad);
+            let offsetY = Math.sin(pitchRad) * 20;
+            
+            ctx.scale(Math.abs(scaleX), Math.abs(scaleY));
+            ctx.translate(0, offsetY);
+            
+            // Draw drone frame (X configuration)
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            
+            // Main frame arms
+            ctx.beginPath();
+            ctx.moveTo(-droneSize, -droneSize);
+            ctx.lineTo(droneSize, droneSize);
+            ctx.moveTo(-droneSize, droneSize);
+            ctx.lineTo(droneSize, -droneSize);
+            ctx.stroke();
+            
+            // Center body
+            ctx.fillStyle = '#333333';
+            ctx.fillRect(-15, -15, 30, 30);
+            ctx.strokeStyle = '#ffffff';
+            ctx.strokeRect(-15, -15, 30, 30);
+            
+            // Draw motors with propeller effect based on motor speeds
+            drawMotor(-droneSize, -droneSize, motors.m1, '#ff0000', 'M1'); // Front Right
+            drawMotor(-droneSize, droneSize, motors.m2, '#00ff00', 'M2');   // Front Left
+            drawMotor(droneSize, droneSize, motors.m3, '#ffff00', 'M3');    // Rear Left
+            drawMotor(droneSize, -droneSize, motors.m4, '#ff00ff', 'M4');   // Rear Right
+            
+            // Draw orientation arrow
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -30);
+            ctx.stroke();
+            
+            // Arrow head
+            ctx.beginPath();
+            ctx.moveTo(0, -30);
+            ctx.lineTo(-5, -25);
+            ctx.moveTo(0, -30);
+            ctx.lineTo(5, -25);
+            ctx.stroke();
+            
+            // Add "FRONT" label
+            ctx.fillStyle = '#00ffff';
+            ctx.font = '12px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText('FRONT', 0, -40);
+            
+            ctx.restore();
+            
+            // Draw ground reference and altitude
+            drawGroundReference();
+            drawFlightInfo();
+        }
+        
+        function drawMotor(x, y, motorSpeed, color, label) {
+            // Motor base
+            ctx.fillStyle = '#444444';
+            ctx.fillRect(x - 8, y - 8, 16, 16);
+            
+            // Motor speed indicator (propeller blur effect)
+            let intensity = ((motorSpeed - 1000) / 1000);
+            let radius = 12 + intensity * 8;
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2 + intensity * 3;
+            ctx.globalAlpha = 0.3 + intensity * 0.7;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Propeller lines for spinning effect
+            if (intensity > 0.1) {
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.6;
+                for (let i = 0; i < 4; i++) {
+                    let angle = (Date.now() / (100 - intensity * 80)) + (i * Math.PI / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(x + Math.cos(angle) * 3, y + Math.sin(angle) * 3);
+                    ctx.lineTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.globalAlpha = 1;
+            
+            // Motor label
+            ctx.fillStyle = color;
+            ctx.font = '10px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y + 25);
+        }
+        
+        function drawGroundReference() {
+            // Ground line
+            let groundY = canvas.height - 30 - (flightData.baroAltitude * 2);
+            
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Ground fill
+            ctx.fillStyle = 'rgba(139, 69, 19, 0.3)';
+            ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+            
+            // Altitude line
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX, groundY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        function drawFlightInfo() {
+            // Flight info overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(10, 10, 150, 120);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = '12px Courier New';
+            ctx.textAlign = 'left';
+            
+            ctx.fillText(`Roll: ${flightData.roll.toFixed(1)}°`, 15, 25);
+            ctx.fillText(`Pitch: ${flightData.pitch.toFixed(1)}°`, 15, 40);
+            ctx.fillText(`Yaw: ${flightData.yaw.toFixed(1)}°`, 15, 55);
+            ctx.fillText(`Alt: ${flightData.baroAlt.toFixed(1)}m`, 15, 70);
+            
+            // PID outputs
+            ctx.fillStyle = '#ffff00';
+            ctx.fillText(`R_PID: ${pid.roll.toFixed(0)}`, 15, 90);
+            ctx.fillText(`P_PID: ${pid.pitch.toFixed(0)}`, 15, 105);
+            ctx.fillText(`Y_PID: ${pid.yaw.toFixed(0)}`, 15, 120);
+            
+            // Armed status
+            ctx.fillStyle = flightData.armed ? '#ff0000' : '#00ff00';
+            ctx.font = 'bold 14px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText(flightData.armed ? 'ARMED' : 'SAFE', canvas.width - 50, 25);
+        }
+
+        // Update sensor readings
+        function updateSensors() {
+            // Simulate IMU drift and noise
+            flightData.roll += (Math.random() - 0.5) * 0.1;
+            flightData.pitch += (Math.random() - 0.5) * 0.1;
+            flightData.yaw += (Math.random() - 0.5) * 0.2;
+            
+            // Add some physics simulation based on motor outputs
+            let avgMotor = (motors.m1 + motors.m2 + motors.m3 + motors.m4) / 4;
+            let rollTorque = (motors.m1 + motors.m4 - motors.m2 - motors.m3) * 0.001;
+            let pitchTorque = (motors.m3 + motors.m4 - motors.m1 - motors.m2) * 0.001;
+            
+            flightData.gyroX = rollTorque + (Math.random() - 0.5) * 2;
+            flightData.gyroY = pitchTorque + (Math.random() - 0.5) * 2;
+            flightData.gyroZ = (Math.random() - 0.5) * 5;
+            
+            // Simulate altitude changes
+            if (avgMotor > 1400) {
+                flightData.baroAlt += (avgMotor - 1400) * 0.001;
+                flightData.altitude = flightData.baroAlt;
+            } else if (flightData.baroAlt > 0) {
+                flightData.baroAlt -= 0.01;
+                flightData.altitude = flightData.baroAlt;
+            }
+            
+            // GPS simulation
+            flightData.speed = Math.abs(flightData.gyroZ) * 0.1;
+            flightData.satellites = 8 + Math.floor(Math.random() * 4);
+        }
+
+        // Calculate PID outputs and motor mixing
+        function calculateFlightControl() {
+            if (!flightData.armed) {
+                motors = {m1: 1000, m2: 1000, m3: 1000, m4: 1000};
+                return;
+            }
+            
+            let dt = 0.01; // 100Hz simulation
+            
+            // Convert receiver inputs to setpoints
+            let rollSetpoint = (flightData.aileron - 1500) * 30 / 500; // ±30 degrees
+            let pitchSetpoint = (flightData.elevator - 1500) * 30 / 500;
+            let yawRateSetpoint = (flightData.rudder - 1500) * 100 / 500; // ±100 deg/s
+            
+            // Calculate PID outputs
+            pid.roll = rollPID.calculate(rollSetpoint, flightData.roll, dt);
+            pid.pitch = pitchPID.calculate(pitchSetpoint, flightData.pitch, dt);
+            pid.yaw = yawPID.calculate(yawRateSetpoint, flightData.gyroZ, dt);
+            
+            // Constrain PID outputs
+            pid.roll = Math.max(-400, Math.min(400, pid.roll));
+            pid.pitch = Math.max(-400, Math.min(400, pid.pitch));
+            pid.yaw = Math.max(-400, Math.min(400, pid.yaw));
+            
+            // Motor mixing for quadcopter (+ configuration)
+            let baseThrottle = Math.max(1000, Math.min(1800, flightData.throttle * 0.9));
+            
+            motors.m1 = baseThrottle - pid.pitch + pid.roll - pid.yaw; // Front Right
+            motors.m2 = baseThrottle - pid.pitch - pid.roll + pid.yaw; // Front Left
+            motors.m3 = baseThrottle + pid.pitch - pid.roll - pid.yaw; // Rear Left
+            motors.m4 = baseThrottle + pid.pitch + pid.roll + pid.yaw; // Rear Right
+            
+            // Constrain motor outputs
+            Object.keys(motors).forEach(key => {
+                motors[key] = Math.max(1000, Math.min(2000, motors[key]));
+            });
+        }
+
+        // Update UI elements
+        function updateDisplay() {
+            // Update sensor displays
+            document.getElementById('roll').textContent = flightData.roll.toFixed(1) + '°';
+            document.getElementById('pitch').textContent = flightData.pitch.toFixed(1) + '°';
+            document.getElementById('yaw').textContent = flightData.yaw.toFixed(1) + '°';
+            document.getElementById('gyroX').textContent = flightData.gyroX.toFixed(1) + '°/s';
+            document.getElementById('gyroY').textContent = flightData.gyroY.toFixed(1) + '°/s';
+            document.getElementById('gyroZ').textContent = flightData.gyroZ.toFixed(1) + '°/s';
+            
+            document.getElementById('latitude').textContent = flightData.latitude.toFixed(6);
+            document.getElementById('longitude').textContent = flightData.longitude.toFixed(6);
+            document.getElementById('gpsAlt').textContent = flightData.altitude.toFixed(1) + 'm';
+            document.getElementById('speed').textContent = flightData.speed.toFixed(1) + 'm/s';
+            document.getElementById('satellites').textContent = flightData.satellites;
+            
+            document.getElementById('pressure').textContent = flightData.pressure.toFixed(2) + ' hPa';
+            document.getElementById('temperature').textContent = flightData.temperature.toFixed(1) + '°C';
+            document.getElementById('baroAlt').textContent = flightData.baroAlt.toFixed(1) + 'm';
+            
+            document.getElementById('throttleVal').textContent = flightData.throttle + 'μs';
+            document.getElementById('aileronVal').textContent = flightData.aileron + 'μs';
+            document.getElementById('elevatorVal').textContent = flightData.elevator + 'μs';
+            document.getElementById('rudderVal').textContent = flightData.rudder + 'μs';
+            
+            // Update 3D drone visualization
+            drawDrone();
+            
+            // Update attitude indicator
+            let horizonLine = document.getElementById('horizonLine');
+            horizonLine.style.transform = `rotate(${-flightData.roll}deg) translateY(${flightData.pitch}px)`;
+            
+            // Update status
+            let armStatus = document.getElementById('armStatus');
+            armStatus.textContent = flightData.armed ? 'ARMED' : 'DISARMED';
+            armStatus.className = flightData.armed ? 'armed' : 'disarmed';
+            
+            document.getElementById('flightMode').textContent = flightData.mode;
+            
+            // Update motor displays
+            ['1', '2', '3', '4'].forEach(i => {
+                let motorVal = motors['m' + i];
+                let percentage = ((motorVal - 1000) / 1000) * 100;
+                document.getElementById('motor' + i).style.width = percentage + '%';
+                document.getElementById('motor' + i + 'Val').textContent = motorVal.toFixed(0) + 'μs';
+            });
+        }
+
+        // Control functions
+        function armDisarm() {
+            if (!flightData.armed && flightData.throttle < 1100) {
+                flightData.armed = true;
+                log('ARMED - Flight controller active');
+            } else if (flightData.armed && flightData.throttle < 1100) {
+                flightData.armed = false;
+                log('DISARMED - Motors stopped');
+            } else {
+                log('Cannot arm/disarm - Lower throttle first');
+            }
+        }
+        
+        function changeMode() {
+            currentModeIndex = (currentModeIndex + 1) % modes.length;
+            flightData.mode = modes[currentModeIndex];
+            log('Flight mode changed to: ' + flightData.mode);
+        }
+        
+        function emergency() {
+            flightData.armed = false;
+            flightData.throttle = 1000;
+            document.getElementById('throttle').value = 1000;
+            log('EMERGENCY STOP - All motors stopped!');
+        }
+        
+        function log(message) {
+            let logArea = document.getElementById('logArea');
+            let timestamp = new Date().toLocaleTimeString();
+            logArea.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        // Event listeners for controls
+        document.getElementById('throttle').addEventListener('input', function() {
+            flightData.throttle = parseInt(this.value);
+        });
+        
+        document.getElementById('aileron').addEventListener('input', function() {
+            flightData.aileron = parseInt(this.value);
+        });
+        
+        document.getElementById('elevator').addEventListener('input', function() {
+            flightData.elevator = parseInt(this.value);
+        });
+        
+        document.getElementById('rudder').addEventListener('input', function() {
+            flightData.rudder = parseInt(this.value);
+        });
+
+        // Main simulation loop
+        function simulationLoop() {
+            updateSensors();
+            calculateFlightControl();
+            updateDisplay();
+        }
+
+        // Start simulation
+        window.addEventListener('load', function() {
+            initDroneVisualization();
+            setInterval(simulationLoop, 10); // 100Hz simulation
+            log('Virtual flight controller started');
+            log('Use sliders to control the aircraft');
+            log('Lower throttle and click ARM/DISARM to arm');
+        });
+    </script>
+</body>
+</html>

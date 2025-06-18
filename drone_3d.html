@@ -1,0 +1,686 @@
+<div class="telemetry-item">
+                <span>Target Alt:</span>
+                <span class="telemetry-value" id="targetAltDisplay">5.0m</span>
+            </div>
+            <div class="telemetry-item">
+                <span>Position:</span>
+                <span class="telemetry-value" id="positionDisplay">0.0, 0.0</span>
+            </div><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Drone Flight Controller Simulator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .slider {
+            width: 150px;
+            margin: 5px 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mode-btn {
+            padding: 8px 12px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #00ff88;
+            color: black;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .telemetry {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .telemetry-item {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            min-width: 200px;
+        }
+
+        .telemetry-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .compass {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .compass-needle {
+            width: 2px;
+            height: 40px;
+            background: #ff4444;
+            transform-origin: bottom;
+            border-radius: 1px;
+        }
+
+        .altitude-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 20px;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .altitude-bar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #00ff88, #ffff00, #ff4444);
+            border-radius: 0 0 10px 10px;
+            transition: height 0.2s ease;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .status-indicator.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        
+        <div class="control-panel">
+            <h3 style="margin-top: 0; color: #00ff88;">Flight Controls</h3>
+            
+            <div class="control-group">
+                <label>Aileron (Roll)</label>
+                <input type="range" class="slider" id="aileron" min="1000" max="2000" value="1500">
+                <span id="aileronVal">1500</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Elevator (Pitch)</label>
+                <input type="range" class="slider" id="elevator" min="1000" max="2000" value="1500">
+                <span id="elevatorVal">1500</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Throttle</label>
+                <input type="range" class="slider" id="throttle" min="1000" max="2000" value="1000">
+                <span id="throttleVal">1000</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Rudder (Yaw)</label>
+                <input type="range" class="slider" id="rudder" min="1000" max="2000" value="1500">
+                <span id="rudderVal">1500</span>
+            </div>
+
+            <div class="control-group">
+                <label>Flight Mode</label>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="setMode(0)">MANUAL</button>
+                    <button class="mode-btn" onclick="setMode(1)">ALT HOLD</button>
+                    <button class="mode-btn" onclick="setMode(2)">GPS HOLD</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Set Target Altitude</label>
+                <input type="range" class="slider" id="targetAlt" min="1" max="20" value="5" step="0.5">
+                <span id="targetAltVal">5.0m</span>
+            </div>
+        </div>
+
+        <div class="telemetry">
+            <h3 style="margin-top: 0; color: #00ff88;">Telemetry</h3>
+            <div class="telemetry-item">
+                <span>Mode:</span>
+                <span class="telemetry-value" id="modeDisplay">MANUAL</span>
+            </div>
+            <div class="telemetry-item">
+                <span>Altitude:</span>
+                <span class="telemetry-value" id="altitudeDisplay">0.0m</span>
+            </div>
+            <div class="telemetry-item">
+                <span>Heading:</span>
+                <span class="telemetry-value" id="headingDisplay">0°</span>
+            </div>
+            <div class="telemetry-item">
+                <span>Roll:</span>
+                <span class="telemetry-value" id="rollDisplay">0°</span>
+            </div>
+            <div class="telemetry-item">
+                <span>Pitch:</span>
+                <span class="telemetry-value" id="pitchDisplay">0°</span>
+            </div>
+            <div class="telemetry-item">
+                <span>GPS:</span>
+                <span class="telemetry-value" id="gpsDisplay">ACQUIRING</span>
+            </div>
+        </div>
+
+        <div class="compass">
+            <div class="compass-needle" id="compassNeedle"></div>
+        </div>
+
+        <div class="altitude-indicator">
+            <div class="altitude-bar" id="altitudeBar"></div>
+        </div>
+
+        <div class="status-indicator" id="statusIndicator"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene setup
+        let scene, camera, renderer, drone, propellers = [];
+        let dronePosition = { x: 0, y: 5, z: 0 };
+        let droneRotation = { x: 0, y: 0, z: 0 };
+        let targetRotation = { x: 0, y: 0, z: 0 };
+        let velocity = { x: 0, y: 0, z: 0 };
+        
+        // Flight controller state
+        let flightMode = 0;
+        let requiredHeight = 5;
+        let currentHeight = 5;
+        let compassInitial = 0;
+        let compassCurrent = 0;
+        let pidError = 0, pidPrevError = 0, pidIntegral = 0;
+        
+        // Control inputs
+        let controls = {
+            aileron: 1500,
+            elevator: 1500,
+            throttle: 1000,
+            rudder: 1500
+        };
+
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x2a5298, 50, 200);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 10, 20);
+            camera.lookAt(0, 5, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x87CEEB);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+
+            // Ground
+            const groundGeometry = new THREE.PlaneGeometry(200, 200);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x4a7c59 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Create drone
+            createDrone();
+            
+            // Create environment
+            createEnvironment();
+
+            // Setup controls
+            setupControls();
+
+            // Start animation
+            animate();
+        }
+
+        function createDrone() {
+            drone = new THREE.Group();
+
+            // Main body
+            const bodyGeometry = new THREE.BoxGeometry(2, 0.3, 0.8);
+            const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.castShadow = true;
+            drone.add(body);
+
+            // Arms
+            const armGeometry = new THREE.CylinderGeometry(0.05, 0.05, 3);
+            const armMaterial = new THREE.MeshPhongMaterial({ color: 0x666666 });
+            
+            for (let i = 0; i < 4; i++) {
+                const arm = new THREE.Mesh(armGeometry, armMaterial);
+                const angle = (i * Math.PI) / 2;
+                arm.position.set(Math.cos(angle) * 1.2, 0, Math.sin(angle) * 1.2);
+                arm.rotation.z = angle + Math.PI / 2;
+                arm.castShadow = true;
+                drone.add(arm);
+
+                // Propellers
+                const propGeometry = new THREE.CylinderGeometry(0.8, 0.8, 0.02);
+                const propMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0x00ff88, 
+                    transparent: true, 
+                    opacity: 0.7 
+                });
+                const propeller = new THREE.Mesh(propGeometry, propMaterial);
+                propeller.position.set(Math.cos(angle) * 1.8, 0.2, Math.sin(angle) * 1.8);
+                propeller.castShadow = true;
+                drone.add(propeller);
+                propellers.push(propeller);
+            }
+
+            // LED indicators
+            const ledGeometry = new THREE.SphereGeometry(0.1);
+            const ledMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const led = new THREE.Mesh(ledGeometry, ledMaterial);
+            led.position.set(0, 0.3, 1);
+            drone.add(led);
+
+            drone.position.set(dronePosition.x, dronePosition.y, dronePosition.z);
+            drone.castShadow = true;
+            scene.add(drone);
+        }
+
+        function createEnvironment() {
+            // Trees
+            for (let i = 0; i < 20; i++) {
+                const treeGroup = new THREE.Group();
+                
+                const trunkGeometry = new THREE.CylinderGeometry(0.2, 0.3, 3);
+                const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+                const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+                trunk.position.y = 1.5;
+                trunk.castShadow = true;
+                treeGroup.add(trunk);
+
+                const leavesGeometry = new THREE.SphereGeometry(1.5);
+                const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+                const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+                leaves.position.y = 3.5;
+                leaves.castShadow = true;
+                treeGroup.add(leaves);
+
+                treeGroup.position.set(
+                    (Math.random() - 0.5) * 100,
+                    0,
+                    (Math.random() - 0.5) * 100
+                );
+                scene.add(treeGroup);
+            }
+
+            // Clouds
+            for (let i = 0; i < 10; i++) {
+                const cloudGeometry = new THREE.SphereGeometry(Math.random() * 3 + 2);
+                const cloudMaterial = new THREE.MeshLambertMaterial({ 
+                    color: 0xffffff, 
+                    transparent: true, 
+                    opacity: 0.8 
+                });
+                const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+                cloud.position.set(
+                    (Math.random() - 0.5) * 200,
+                    Math.random() * 20 + 30,
+                    (Math.random() - 0.5) * 200
+                );
+                scene.add(cloud);
+            }
+        }
+
+        function setupControls() {
+            const sliders = ['aileron', 'elevator', 'throttle', 'rudder'];
+            
+            sliders.forEach(control => {
+                const slider = document.getElementById(control);
+                const display = document.getElementById(control + 'Val');
+                
+                slider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    controls[control] = value;
+                    display.textContent = value;
+                });
+            });
+
+            // Target altitude control
+            const targetAltSlider = document.getElementById('targetAlt');
+            const targetAltDisplay = document.getElementById('targetAltVal');
+            
+            targetAltSlider.addEventListener('input', (e) => {
+                requiredHeight = parseFloat(e.target.value);
+                targetAltDisplay.textContent = requiredHeight.toFixed(1) + 'm';
+            });
+        }
+
+        function setMode(mode) {
+            flightMode = mode;
+            const modes = ['MANUAL', 'ALT HOLD', 'GPS HOLD'];
+            document.getElementById('modeDisplay').textContent = modes[mode];
+            
+            // Update button states
+            document.querySelectorAll('.mode-btn').forEach((btn, index) => {
+                btn.classList.toggle('active', index === mode);
+            });
+
+            // Mode-specific initialization
+            if (mode === 1 || mode === 2) {
+                // When entering altitude hold modes, set current height as target
+                requiredHeight = currentHeight;
+                document.getElementById('targetAlt').value = requiredHeight;
+                document.getElementById('targetAltVal').textContent = requiredHeight.toFixed(1) + 'm';
+                showStatus(`Target altitude set to ${requiredHeight.toFixed(1)}m`);
+            }
+            
+            if (mode === 2) {
+                // GPS hold mode - save current position as home
+                showStatus(`GPS HOLD: Position locked at (${dronePosition.x.toFixed(1)}, ${dronePosition.z.toFixed(1)})`);
+            }
+
+            // Show status
+            showStatus(`Mode changed to ${modes[mode]}`);
+
+            // Reset PID when changing modes
+            pidError = 0;
+            pidPrevError = 0;
+            pidIntegral = 0;
+        }
+
+        function showStatus(message) {
+            const indicator = document.getElementById('statusIndicator');
+            indicator.textContent = message;
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateFlightController() {
+            // Simulate your Arduino flight controller logic
+            let finalAileron = controls.aileron;
+            let finalElevator = controls.elevator;
+            let finalThrottle = controls.throttle;
+            let finalRudder = controls.rudder;
+
+            // Mode-specific control logic
+            switch (flightMode) {
+                case 0: // Manual mode
+                    requiredHeight = currentHeight;
+                    compassInitial = compassCurrent;
+                    // Reset PID when entering manual mode
+                    pidError = 0;
+                    pidPrevError = 0;
+                    pidIntegral = 0;
+                    break;
+
+                case 1: // Yaw hold mode
+                    // Yaw hold - maintain initial heading
+                    const yawError = compassCurrent - compassInitial;
+                    finalRudder += yawError * 5; // p_mag = 5
+
+                    // Altitude hold with PID
+                    pidError = requiredHeight - currentHeight;
+                    const pidDerivative = pidError - pidPrevError;
+                    pidIntegral += pidError;
+                    pidPrevError = pidError;
+
+                    const pidOutput = 1.5 * pidError + 0.0 * pidIntegral + 0.1 * pidDerivative;
+                    finalThrottle += pidOutput * 100; // Scale for better response
+                    break;
+
+                case 2: // GPS hold mode
+                    // Yaw hold
+                    const yawError2 = compassCurrent - compassInitial;
+                    finalRudder += yawError2 * 5;
+
+                    // GPS position hold - return to initial position
+                    const positionErrorX = 0 - dronePosition.x; // Target X = 0
+                    const positionErrorZ = 0 - dronePosition.z; // Target Z = 0
+                    const velocityErrorX = 0 - velocity.x;
+                    const velocityErrorZ = 0 - velocity.z;
+                    
+                    // Apply GPS corrections (simulate your GPS PD controller)
+                    finalAileron += positionErrorX * 200 + velocityErrorX * 100; // Position + velocity feedback
+                    finalElevator += positionErrorZ * 200 + velocityErrorZ * 100;
+
+                    // Altitude hold
+                    pidError = requiredHeight - currentHeight;
+                    const pidDerivative2 = pidError - pidPrevError;
+                    pidIntegral += pidError;
+                    pidPrevError = pidError;
+
+                    const pidOutput2 = 1.5 * pidError + 0.0 * pidIntegral + 0.1 * pidDerivative2;
+                    finalThrottle += pidOutput2 * 100;
+                    break;
+            }
+
+            // Clamp control values to realistic ranges
+            finalAileron = Math.max(1000, Math.min(2000, finalAileron));
+            finalElevator = Math.max(1000, Math.min(2000, finalElevator));
+            finalThrottle = Math.max(1000, Math.min(2000, finalThrottle));
+            finalRudder = Math.max(1000, Math.min(2000, finalRudder));
+
+            // Convert control inputs to drone movement
+            const rollInput = (finalAileron - 1500) / 500;
+            const pitchInput = (finalElevator - 1500) / 500;
+            const yawInput = (finalRudder - 1500) / 500;
+            const throttleInput = (finalThrottle - 1000) / 1000;
+
+            // Update target rotation with more realistic limits
+            targetRotation.z = -rollInput * 0.3; // Roll (reduced for stability)
+            targetRotation.x = -pitchInput * 0.3; // Pitch (reduced for stability)
+            
+            // Yaw control
+            droneRotation.y += yawInput * 0.03;
+            compassCurrent = (droneRotation.y * 180 / Math.PI) % 360;
+
+            // Physics-based movement
+            const thrust = Math.max(0, throttleInput - 0.1); // Minimum throttle for hover
+            
+            // Vertical movement
+            velocity.y += (thrust - 0.5) * 0.15;
+            velocity.y -= 0.02; // Gravity
+            velocity.y *= 0.95; // Air resistance
+
+            // Horizontal movement based on tilt
+            const forwardForce = Math.sin(droneRotation.x) * thrust * 0.1;
+            const sidewardForce = Math.sin(droneRotation.z) * thrust * 0.1;
+            
+            // Apply forces in world coordinates considering yaw rotation
+            const cosYaw = Math.cos(droneRotation.y);
+            const sinYaw = Math.sin(droneRotation.y);
+            
+            velocity.x += (forwardForce * sinYaw + sidewardForce * cosYaw);
+            velocity.z += (forwardForce * cosYaw - sidewardForce * sinYaw);
+            
+            // Air resistance for horizontal movement
+            velocity.x *= 0.92;
+            velocity.z *= 0.92;
+
+            // Update position
+            dronePosition.x += velocity.x;
+            dronePosition.y += velocity.y;
+            dronePosition.z += velocity.z;
+            
+            // Ground collision
+            dronePosition.y = Math.max(0.5, dronePosition.y);
+
+            currentHeight = dronePosition.y;
+        }
+
+        function updateDrone() {
+            // Smooth rotation interpolation
+            droneRotation.x += (targetRotation.x - droneRotation.x) * 0.1;
+            droneRotation.z += (targetRotation.z - droneRotation.z) * 0.1;
+
+            // Apply transformations
+            drone.position.set(dronePosition.x, dronePosition.y, dronePosition.z);
+            drone.rotation.set(droneRotation.x, droneRotation.y, droneRotation.z);
+
+            // Animate propellers
+            const propSpeed = (controls.throttle - 1000) / 10;
+            propellers.forEach((prop, index) => {
+                prop.rotation.y += (index % 2 === 0 ? propSpeed : -propSpeed);
+            });
+
+            // Update camera to follow drone
+            camera.position.x += (dronePosition.x - camera.position.x + 10) * 0.05;
+            camera.position.y += (dronePosition.y + 10 - camera.position.y) * 0.05;
+            camera.position.z += (dronePosition.z + 20 - camera.position.z) * 0.05;
+            camera.lookAt(dronePosition.x, dronePosition.y, dronePosition.z);
+        }
+
+        function updateTelemetry() {
+            document.getElementById('altitudeDisplay').textContent = currentHeight.toFixed(1) + 'm';
+            document.getElementById('targetAltDisplay').textContent = requiredHeight.toFixed(1) + 'm';
+            document.getElementById('headingDisplay').textContent = Math.round(compassCurrent % 360) + '°';
+            document.getElementById('rollDisplay').textContent = Math.round(droneRotation.z * 180 / Math.PI) + '°';
+            document.getElementById('pitchDisplay').textContent = Math.round(droneRotation.x * 180 / Math.PI) + '°';
+            document.getElementById('positionDisplay').textContent = dronePosition.x.toFixed(1) + ', ' + dronePosition.z.toFixed(1);
+            document.getElementById('gpsDisplay').textContent = flightMode >= 2 ? 'LOCKED' : 'ACQUIRING';
+
+            // Update compass
+            document.getElementById('compassNeedle').style.transform = `rotate(${compassCurrent}deg)`;
+
+            // Update altitude indicator
+            const altitudePercent = Math.min(100, (currentHeight / 20) * 100);
+            document.getElementById('altitudeBar').style.height = altitudePercent + '%';
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            updateFlightController();
+            updateDrone();
+            updateTelemetry();
+            
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Initialize the simulation
+        init();
+    </script>
+</body>
+</html>
