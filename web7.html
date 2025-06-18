@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMaster - Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 30%, #16213e 60%, #0f3460 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background Particles */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% { 
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { 
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Login Modal */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-container {
+            background: rgba(10, 14, 39, 0.95);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .login-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .login-tab.active {
+            background: rgba(0, 212, 255, 0.1);
+            border-bottom: 2px solid #00d4ff;
+        }
+
+        .login-tab:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+
+        .login-content {
+            padding: 2rem;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .close-login {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s;
+        }
+
+        .close-login:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "◆";
+            color: #00ff88;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5));
+        }
+
+        .greeting {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 1rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-logout {
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff5555;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff5555;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            min-height: 100vh;
+            padding: 6rem 0 4rem;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 2rem 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .sidebar-logo-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 18px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2));
+            transition: width 0.3s ease;
+            border-radius: 15px;
+        }
+
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            width: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ffffff;
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 25px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 12px 20px;
+            gap: 12px;
+            min-width: 350px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus-within {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: #ffffff;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-profile:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Content Sections */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Video Section */
+        .video-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            height: 160px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #00d4ff 100%);
+            overflow: hidden;
+        }
+
+        .loading-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .video-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .video-views::before {
+            content: "👁️";
+            margin-right: 5px;
+        }
+
+        .video-likes::before {
+            content: "👍";
+            margin-right: 5px;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Progress Card */
+        .progress-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .progress-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: #00d4ff;
+        }
+
+        .progress-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .total-watched {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Test Access Card */
+        .test-access-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .test-access-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: #00d4ff;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-info {
+            flex: 1;
+        }
+
+        .test-name {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .test-subject {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .test-status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-locked {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff5555;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+
+        .status-unlocked {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .test-btn {
+            padding: 8px 15px;
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .test-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Google Form Section */
+        .google-form-container {
+            margin-top: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .google-form-container h2 {
+            margin-bottom: 1.5rem;
+            color: #00d4ff;
+        }
+
+        .google-form-placeholder {
+            height: 500px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            .dashboard {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-section {
+                padding-top: 5rem;
+            }
+            
+            .search-bar {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Login Modal (shown by default) -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-container">
+            <div class="login-header">EduMaster Learning Platform</div>
+            <div class="login-tabs">
+                <div class="login-tab active" onclick="switchTab('student')">Student Login</div>
+                <div class="login-tab" onclick="switchTab('teacher')">Teacher Login</div>
+            </div>
+            <div class="login-content">
+                <!-- Student Login Form -->
+                <form class="login-form active" id="studentForm">
+                    <div class="form-group">
+                        <label for="studentEmail">Email</label>
+                        <input type="email" id="studentEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentName">Full Name</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentClass">Class/Grade</label>
+                        <input type="text" id="studentClass" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentPhone">Phone Number</label>
+                        <input type="tel" id="studentPhone">
+                    </div>
+                    <button type="button" class="login-btn" onclick="loginAsStudent()">Login as Student</button>
+                </form>
+                
+                <!-- Teacher Login Form -->
+                <form class="login-form" id="teacherForm">
+                    <div class="form-group">
+                        <label for="teacherEmail">Email</label>
+                        <input type="email" id="teacherEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherName">Full Name</label>
+                        <input type="text" id="teacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherSubject">Subject</label>
+                        <input type="text" id="teacherSubject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherChannel">YouTube Channel Link</label>
+                        <input type="url" id="teacherChannel">
+                    </div>
+                    <button type="button" class="login-btn" onclick="loginAsTeacher()">Login as Teacher</button>
+                </form>
+            </div>
+            <div class="close-login" onclick="closeLogin()">×</div>
+        </div>
+    </div>
+
+    <!-- Navigation (hidden until login) -->
+    <nav id="mainNav" style="display: none;">
+        <div class="nav-container">
+            <div style="display: flex; align-items: center;">
+                <div class="logo">EduMaster</div>
+                <div class="greeting" id="greetingText">Good morning</div>
+            </div>
+            <div class="auth-buttons">
+                <a href="#" class="btn-logout" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section (hidden until login) -->
+    <section class="dashboard-section" id="dashboardSection" style="display: none;">
+        <div class="dashboard">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">E</div>
+                    <span style="font-weight: bold; font-size: 18px;">EduMaster</span>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#overview" class="nav-link active">
+                            <div class="nav-icon">🏠</div>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#physics" class="nav-link">
+                            <div class="nav-icon">🔭</div>
+                            <span>Physics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#chemistry" class="nav-link">
+                            <div class="nav-icon">🧪</div>
+                            <span>Chemistry</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#biology" class="nav-link">
+                            <div class="nav-icon">🧬</div>
+                            <span>Biology</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#math" class="nav-link">
+                            <div class="nav-icon">🧮</div>
+                            <span>Math</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#higher-math" class="nav-link">
+                            <div class="nav-icon">∫</div>
+                            <span>Higher Math</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#bangla" class="nav-link">
+                            <div class="nav-icon">📖</div>
+                            <span>Bangla</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#english" class="nav-link">
+                            <div class="nav-icon">🅰️</div>
+                            <span>English</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <main class="main-content">
+                <header class="header">
+                    <div class="search-bar">
+                        <div style="opacity: 0.6;">🔍</div>
+                        <input type="text" placeholder="Search subjects, videos, tests...">
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">S</div>
+                        <div>
+                            <div style="font-weight: 500;" id="userName">Student</div>
+                            <div style="font-size: 12px; opacity: 0.6;" id="userType">Student Account</div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="content-grid">
+                    <div class="video-section">
+                        <h2 class="section-title">📺 Recommended Videos</h2>
+                        <div class="video-grid">
+                            <!-- Video Card 1 -->
+                            <div class="video-card" onclick="watchVideo('Introduction to Physics', 'physics')">
+                                <div class="video-thumbnail">
+                                    <div class="loading-thumbnail"></div>
+                                    <div class="video-duration">12:45</div>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Introduction to Physics - Basic Concepts Explained</div>
+                                    <div class="video-meta">
+                                        <span class="video-views">1.2K views</span>
+                                        <span class="video-likes">85 likes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Card 2 -->
+                            <div class="video-card" onclick="watchVideo('Chemical Reactions', 'chemistry')">
+                                <div class="video-thumbnail">
+                                    <div class="loading-thumbnail"></div>
+                                    <div class="video-duration">18:30</div>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Understanding Chemical Reactions - Types and Examples</div>
+                                    <div class="video-meta">
+                                        <span class="video-views">950 views</span>
+                                        <span class="video-likes">72 likes</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Card 3 -->
+                            <div class="video-card" onclick="watchVideo('Cell Biology', 'biology')">
+                                <div class="video-thumbnail">
+                                    <div class="loading-thumbnail"></div>
+                                    <div class="video-duration">15:20</div>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Cell Biology - Structure and Function of Cells</div>
+                                    <div class="video-meta">
+                                        <span class="video-views">1.5K views</span>
+                                        <span class="video-likes">120 likes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-panel">
+                        <!-- Progress Card -->
+                        <div class="progress-card">
+                            <h3>Your Learning Progress</h3>
+                            <div class="progress-item">
+                                <div class="progress-title">
+                                    <span>Physics</span>
+                                    <span id="physicsProgress">25%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 25%;"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-title">
+                                    <span>Chemistry</span>
+                                    <span id="chemistryProgress">15%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 15%;"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-title">
+                                    <span>Biology</span>
+                                    <span id="biologyProgress">10%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 10%;"></div>
+                                </div>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-title">
+                                    <span>Math</span>
+                                    <span id="mathProgress">35%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                            <div class="total-watched">
+                                Total watched: <span id="totalWatched">85</span> minutes
+                            </div>
+                        </div>
+
+                        <!-- Test Access Card -->
+                        <div class="test-access-card">
+                            <h3>Test Access Status</h3>
+                            <div class="test-item">
+                                <div class="test-info">
+                                    <div class="test-name">Physics Midterm</div>
+                                    <div class="test-subject">Physics</div>
+                                </div>
+                                <div class="test-status status-locked">Locked</div>
+                            </div>
+                            <div class="test-item">
+                                <div class="test-info">
+                                    <div class="test-name">Chemistry Quiz</div>
+                                    <div class="test-subject">Chemistry</div>
+                                </div>
+                                <div class="test-status status-locked">Locked</div>
+                            </div>
+                            <div class="test-item">
+                                <div class="test-info">
+                                    <div class="test-name">Math Assessment</div>
+                                    <div class="test-subject">Math</div>
+                                </div>
+                                <div class="test-status status-unlocked">Unlocked</div>
+                            </div>
+                            <button class="test-btn" id="takeTestBtn" disabled>Take Test</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Form Section -->
+                <div class="google-form-container">
+                    <h2>📝 Student Feedback Form</h2>
+                    <div class="google-form-placeholder">
+                        Google Form will be embedded here
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <script>
+        // Create particles for background
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = Math.floor(window.innerWidth / 10);
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 20;
+                const size = Math.random() * 3 + 1;
+                
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // Switch between student and teacher login tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'student') {
+                document.querySelector('.login-tab:first-child').classList.add('active');
+                document.getElementById('studentForm').classList.add('active');
+            } else {
+                document.querySelector('.login-tab:last-child').classList.add('active');
+                                document.getElementById('teacherForm').classList.add('active');
+            }
+        }
+        
+        // Close login modal (but in your case, we want it to always show until login)
+        function closeLogin() {
+            // Don't allow closing without login
+            alert("Please login to access the platform");
+        }
+        
+        // Login as student
+        function loginAsStudent() {
+            const email = document.getElementById('studentEmail').value;
+            const name = document.getElementById('studentName').value;
+            const studentClass = document.getElementById('studentClass').value;
+            const phone = document.getElementById('studentPhone').value;
+            
+            if (!email || !name || !studentClass) {
+                alert("Please fill in all required fields");
+                return;
+            }
+            
+            // Set user data
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('userType').textContent = `Class ${studentClass}`;
+            
+            // Show dashboard and hide login
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('mainNav').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'block';
+            
+            // Update greeting based on time
+            updateGreeting();
+            
+            // Send login notification email (simulated)
+            sendLoginEmail(email, name, 'student');
+        }
+        
+        // Login as teacher
+        function loginAsTeacher() {
+            const email = document.getElementById('teacherEmail').value;
+            const name = document.getElementById('teacherName').value;
+            const subject = document.getElementById('teacherSubject').value;
+            const channel = document.getElementById('teacherChannel').value;
+            
+            if (!email || !name || !subject) {
+                alert("Please fill in all required fields");
+                return;
+            }
+            
+            // Set user data
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('userType').textContent = `${subject} Teacher`;
+            
+            // Show dashboard and hide login
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('mainNav').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'block';
+            
+            // Update greeting based on time
+            updateGreeting();
+            
+            // Send login notification email (simulated)
+            sendLoginEmail(email, name, 'teacher');
+        }
+        
+        // Logout function
+        function logout() {
+            // Clear form fields
+            document.getElementById('studentEmail').value = '';
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentClass').value = '';
+            document.getElementById('studentPhone').value = '';
+            
+            document.getElementById('teacherEmail').value = '';
+            document.getElementById('teacherName').value = '';
+            document.getElementById('teacherSubject').value = '';
+            document.getElementById('teacherChannel').value = '';
+            
+            // Show login and hide dashboard
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('mainNav').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'none';
+            
+            // Switch back to student tab
+            switchTab('student');
+        }
+        
+        // Update greeting based on time of day
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting;
+            
+            if (hour < 12) {
+                greeting = "Good morning";
+            } else if (hour < 18) {
+                greeting = "Good afternoon";
+            } else {
+                greeting = "Good evening";
+            }
+            
+            document.getElementById('greetingText').textContent = greeting;
+        }
+        
+        // Simulate sending login notification email
+        function sendLoginEmail(email, name, userType) {
+            console.log(`Email sent to ${email}: Dear ${name}, you have successfully logged in to EduMaster as a ${userType}.`);
+            // In a real app, you would send an actual email here
+        }
+        
+        // Track video watching time
+        let totalWatchedTime = 0;
+        let videoInterval;
+        
+        function watchVideo(title, subject) {
+            // Show video player (simulated)
+            alert(`Now playing: ${title}\nSubject: ${subject}`);
+            
+            // Start tracking watch time
+            let secondsWatched = 0;
+            const videoDuration = Math.floor(Math.random() * 10) + 5; // Random duration 5-15 mins
+            
+            // Update progress for this subject
+            updateSubjectProgress(subject);
+            
+            // Update total watched time
+            videoInterval = setInterval(() => {
+                secondsWatched++;
+                totalWatchedTime++;
+                
+                // Update UI every 5 seconds
+                if (secondsWatched % 5 === 0) {
+                    document.getElementById('totalWatched').textContent = Math.floor(totalWatchedTime / 60);
+                    
+                    // Check if we should unlock tests
+                    checkTestUnlock(subject, title);
+                }
+                
+                // End of video
+                if (secondsWatched >= videoDuration * 60) {
+                    clearInterval(videoInterval);
+                    alert(`You've completed watching ${title}`);
+                    
+                    // Update likes (simulated)
+                    updateVideoLikes(title);
+                }
+            }, 1000);
+        }
+        
+        // Update subject progress
+        function updateSubjectProgress(subject) {
+            const progressElements = {
+                'physics': { element: 'physicsProgress', current: 25 },
+                'chemistry': { element: 'chemistryProgress', current: 15 },
+                'biology': { element: 'biologyProgress', current: 10 },
+                'math': { element: 'mathProgress', current: 35 }
+            };
+            
+            if (progressElements[subject]) {
+                // Increase progress by 5-15%
+                const increase = Math.floor(Math.random() * 10) + 5;
+                const newProgress = Math.min(progressElements[subject].current + increase, 100);
+                
+                progressElements[subject].current = newProgress;
+                document.getElementById(progressElements[subject].element).textContent = `${newProgress}%`;
+                
+                // Update progress bar
+                const progressBar = document.querySelector(`#${progressElements[subject].element}`).parentElement.nextElementSibling.querySelector('.progress-fill');
+                progressBar.style.width = `${newProgress}%`;
+            }
+        }
+        
+        // Check if tests should be unlocked
+        function checkTestUnlock(subject, title) {
+            // Simulate unlocking tests after watching videos and liking them
+            const testItems = document.querySelectorAll('.test-item');
+            
+            testItems.forEach(item => {
+                const testSubject = item.querySelector('.test-subject').textContent.toLowerCase();
+                
+                if (testSubject === subject) {
+                    // Check if this is the specific video that unlocks the test
+                    if (title.includes("Introduction") || title.includes("Basic Concepts")) {
+                        // Change status to unlocked
+                        const statusElement = item.querySelector('.test-status');
+                        statusElement.classList.remove('status-locked');
+                        statusElement.classList.add('status-unlocked');
+                        statusElement.textContent = 'Unlocked';
+                        
+                        // Enable test button
+                        document.getElementById('takeTestBtn').disabled = false;
+                    }
+                }
+            });
+        }
+        
+        // Update video likes (simulated)
+        function updateVideoLikes(title) {
+            // In a real app, this would be handled by a backend
+            console.log(`User liked video: ${title}`);
+        }
+        
+        // Initialize the page
+        window.onload = function() {
+            createParticles();
+            updateGreeting();
+            
+            // Set interval to update greeting if page stays open for long
+            setInterval(updateGreeting, 3600000); // Update every hour
+            
+            // Initialize test button
+            document.getElementById('takeTestBtn').addEventListener('click', function() {
+                alert("Redirecting to test...");
+                // In a real app, this would open the test
+            });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduStream - Your Learning Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles & Animations (from your original code) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 30%, #16213e 60%, #0f3460 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background Particles */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% { 
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { 
+                transform: translateY(-100px) translateX(100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Landing Section */
+        .landing-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "◆";
+            color: #00ff88;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.5));
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a:hover::after {
+            width: 80%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-login, .btn-register {
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-login:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 2rem;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .btn-primary {
+            padding: 1.2rem 2.5rem;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 1.2rem 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            min-height: 100vh;
+            padding: 4rem 0;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 2rem 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .sidebar-logo-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 18px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2));
+            transition: width 0.3s ease;
+            border-radius: 15px;
+        }
+
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            width: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #ffffff;
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            font-size: 18px;
+            z-index: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 25px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 12px 20px;
+            gap: 12px;
+            min-width: 350px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus-within {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: #ffffff;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-profile:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .featured-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #00d4ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-image::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        }
+
+        .featured-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2.5rem;
+            z-index: 2;
+        }
+
+        .featured-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(45deg, #ffffff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .featured-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .play-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border: none;
+            color: #ffffff;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .play-button:hover {
+            background: rgba(0, 212, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .activity-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .activity-card:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .activity-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: #00d4ff;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-title {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-change {
+            font-size: 0.9rem;
+            color: #00ff88;
+            margin-top: 0.5rem;
+        }
+
+        .chart-mini {
+            height: 60px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line-mini {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 80%;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            width: 100%;
+            clip-path: polygon(0 100%, 15% 85%, 30% 60%, 45% 40%, 60% 30%, 75% 20%, 90% 10%, 100% 0%, 100% 100%);
+            animation: slideChart 2s ease-out;
+        }
+
+        @keyframes slideChart {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- New/Modified Styles --- */
+
+        /* Login Modal */
+        .login-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-modal-content {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-modal-content h2 {
+            margin-bottom: 25px;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-form-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .login-form-toggle button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .login-form-toggle button.active,
+        .login-form-toggle button:hover {
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            border-color: #00d4ff;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .login-form-group input {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form-group input:focus {
+            border-color: #00d4ff;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Video Overview Section */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 180px;
+            background-color: rgba(0, 0, 0, 0.5); /* Placeholder background */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-channel {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .video-meta {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Loading Skeleton for Videos */
+        .skeleton-loader {
+            animation: pulse-bg 1.2s infinite;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .skeleton-loader .skeleton-thumbnail {
+            width: 100%;
+            height: 180px;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .skeleton-loader .skeleton-info {
+            padding: 1rem;
+        }
+
+        .skeleton-loader .skeleton-title {
+            height: 20px;
+            width: 90%;
+            background-color: rgba(255, 255, 255, 0.15);
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .skeleton-loader .skeleton-channel {
+            height: 15px;
+            width: 60%;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .skeleton-loader .skeleton-meta {
+            height: 12px;
+            width: 40%;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 5px;
+        }
+
+
+        @keyframes pulse-bg {
+            0% { background-color: rgba(255, 255, 255, 0.08); }
+            50% { background-color: rgba(255, 255, 255, 0.15); }
+            100% { background-color: rgba(255, 255, 255, 0.08); }
+        }
+
+        /* My Progress Section */
+        .progress-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            margin-top: 2rem;
+        }
+
+        .progress-card h3 {
+            font-size: 1.4rem;
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+
+        .progress-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .progress-value {
+            font-weight: bold;
+            color: #00ff88;
+            font-size: 1.1rem;
+        }
+
+        /* Google Form / Test Exam Section */
+        .insights-content {
+            padding: 2rem;
+        }
+
+        .google-form-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            text-align: center;
+            min-height: 400px; /* Adjust as needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .google-form-container iframe {
+            width: 100%;
+            height: 500px; /* Adjust as needed */
+            border: none;
+            border-radius: 15px;
+        }
+
+        .form-locked-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            z-index: 10;
+            color: white;
+            font-size: 1.2rem;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .form-locked-overlay p {
+            margin-bottom: 20px;
+        }
+
+        .fake-like-button {
+            background: linear-gradient(135deg, #FF6B6B, #FFB86B);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .fake-like-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        /* Mobile Responsive (from original code, kept for completeness) */
+        @media (max-width: 1200px) {
+            .dashboard {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .dashboard {
+                padding: 0 1rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .search-bar {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles-container" id="particles"></div>
+
+    <div id="loginModal" class="login-modal" style="display: flex;">
+        <div class="login-modal-content">
+            <h2>Welcome to EduStream!</h2>
+            <div class="login-form-toggle">
+                <button id="studentLoginBtn" class="active">Student Login</button>
+                <button id="teacherLoginBtn">Teacher Login</button>
+            </div>
+
+            <form id="studentLoginForm" class="login-form">
+                <div class="login-form-group">
+                    <label for="studentName">Name</label>
+                    <input type="text" id="studentName" placeholder="Your Name" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="studentClass">Class</label>
+                    <input type="text" id="studentClass" placeholder="Your Class (e.g., 10)" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="studentPhone">Phone</label>
+                    <input type="tel" id="studentPhone" placeholder="Your Phone Number" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="studentEmail">Email</label>
+                    <input type="email" id="studentEmail" placeholder="Your Email" required>
+                </div>
+                <button type="submit" class="login-button">Login as Student</button>
+            </form>
+
+            <form id="teacherLoginForm" class="login-form" style="display: none;">
+                <div class="login-form-group">
+                    <label for="teacherName">Name</label>
+                    <input type="text" id="teacherName" placeholder="Your Name" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="teacherSubject">Subject</label>
+                    <input type="text" id="teacherSubject" placeholder="Subject Taught (e.g., Physics)" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="teacherEmail">Email</label>
+                    <input type="email" id="teacherEmail" placeholder="Your Email" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="teacherYoutube">YouTube Channel Link</label>
+                    <input type="url" id="teacherYoutube" placeholder="https://youtube.com/yourchannel">
+                </div>
+                <button type="submit" class="login-button">Login as Teacher</button>
+            </form>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">EduStream</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#myprogress">My Progress</a></li>
+                <li><a href="#insights">Insights</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="#" class="btn-login" id="navLoginBtn">Login</a>
+                <a href="#register" class="btn-register">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="landing-section">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Master Your Subjects with EduStream</h1>
+                <p>Unlock your full academic potential with interactive lessons, personalized progress tracking, and expert insights. Your journey to knowledge starts here.</p>
+                <div class="cta-buttons">
+                    <a href="#dashboard" class="btn-primary">Go to Dashboard</a>
+                    <a href="#demo" class="btn-secondary">Explore Subjects</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboard" class="dashboard-section">
+        <div class="dashboard">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">E</div>
+                    <span style="font-weight: bold; font-size: 18px;" id="greetingText">Good Day!</span>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#overview" class="nav-link active" data-target="overview-content">
+                            <div class="nav-icon"><i class="fas fa-home"></i></div>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#myprogress" class="nav-link" data-target="my-progress-content">
+                            <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
+                            <span>My Progress</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#physics" class="nav-link" data-target="subject-physics">
+                            <div class="nav-icon"><i class="fas fa-atom"></i></div>
+                            <span>Physics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#chemistry" class="nav-link" data-target="subject-chemistry">
+                            <div class="nav-icon"><i class="fas fa-flask"></i></div>
+                            <span>Chemistry</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#biology" class="nav-link" data-target="subject-biology">
+                            <div class="nav-icon"><i class="fas fa-leaf"></i></div>
+                            <span>Biology</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#highermath" class="nav-link" data-target="subject-higher-math">
+                            <div class="nav-icon"><i class="fas fa-superscript"></i></div>
+                            <span>Higher Math</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#math" class="nav-link" data-target="subject-math">
+                            <div class="nav-icon"><i class="fas fa-calculator"></i></div>
+                            <span>Math</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#bangla" class="nav-link" data-target="subject-bangla">
+                            <div class="nav-icon">🇧🇩</div>
+                            <span>Bangla</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#english" class="nav-link" data-target="subject-english">
+                            <div class="nav-icon">🇬🇧</div>
+                            <span>English</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#insights" class="nav-link" data-target="insights-content">
+                            <div class="nav-icon"><i class="fas fa-lightbulb"></i></div>
+                            <span>Test Exam</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#settings" class="nav-link" data-target="settings-content">
+                            <div class="nav-icon"><i class="fas fa-cog"></i></div>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <main class="main-content">
+                <header class="header">
+                    <div class="search-bar">
+                        <div style="opacity: 0.6;"><i class="fas fa-search"></i></div>
+                        <input type="text" placeholder="Search lessons, topics, teachers...">
+                    </div>
+                    
+                    <div class="user-profile" onclick="toggleUserMenu()">
+                        <div class="user-avatar" id="userAvatar">JD</div>
+                        <div>
+                            <div style="font-weight: 500;" id="userName">John Doe</div>
+                            <div style="font-size: 12px; opacity: 0.6;" id="userRole">Student Account</div>
+                        </div>
+                    </div>
+                </header>
+
+                <div id="dynamicContent">
+                    <div id="overview-content" class="content-section">
+                        <h2>Overview of Latest Lessons</h2>
+                        <div class="video-grid" id="videoGrid">
+                            </div>
+                    </div>
+
+                    <div id="my-progress-content" class="content-section" style="display: none;">
+                        <div class="progress-card">
+                            <h3>My Learning Progress</h3>
+                            <div class="progress-item">
+                                <span class="progress-label">Total Watch Time</span>
+                                <span class="progress-value" id="totalWatchTime">0 hours 0 mins</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-label">Videos Watched</span>
+                                <span class="progress-value" id="videosWatched">0</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-label">Quizzes Completed</span>
+                                <span class="progress-value" id="quizzesCompleted">0</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-label">Current Streak</span>
+                                <span class="progress-value" id="currentStreak">0 days</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-card" style="margin-top: 2rem;">
+                            <h3>Recently Watched Videos</h3>
+                            <div id="recentlyWatchedVideos" class="video-grid">
+                                <p style="text-align: center; color: rgba(255,255,255,0.6);">No videos watched yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subject-physics" class="content-section" style="display: none;">
+                        <h2>Physics Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Explore a wide range of physics topics from mechanics to quantum physics.</p>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Introduction to Newtonian Mechanics</div>
+                                    <div class="video-channel">Prof. Green</div>
+                                    <div class="video-meta">10 min • 1.2K views</div>
+                                </div>
+                            </div>
+                             <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/M7W1J76R9Gg/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Electromagnetism Basics</div>
+                                    <div class="video-channel">Dr. Spark</div>
+                                    <div class="video-meta">15 min • 980 views</div>
+                                </div>
+                            </div>
+                            </div>
+                    </div>
+
+                    <div id="subject-chemistry" class="content-section" style="display: none;">
+                        <h2>Chemistry Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Dive into the world of atoms, molecules, and chemical reactions.</p>
+                        <div class="video-grid">
+                             <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/W_Ww6R-B67o/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Periodic Table Explained</div>
+                                    <div class="video-channel">Chem Master</div>
+                                    <div class="video-meta">12 min • 850 views</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subject-biology" class="content-section" style="display: none;">
+                        <h2>Biology Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Understand the living world from cells to ecosystems.</p>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/eJ4zB85h1Q4/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">The Cell: Structure & Functions</div>
+                                    <div class="video-channel">Bio Guide</div>
+                                    <div class="video-meta">18 min • 1.5K views</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="subject-higher-math" class="content-section" style="display: none;">
+                        <h2>Higher Math Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Challenge yourself with advanced mathematical concepts.</p>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/q_P8o9M_k-8/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Calculus: Limits & Derivatives</div>
+                                    <div class="video-channel">Math Genius</div>
+                                    <div class="video-meta">25 min • 2.1K views</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subject-math" class="content-section" style="display: none;">
+                        <h2>Math Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Build a strong foundation in core mathematical principles.</p>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/N6wE-92M6qM/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Algebra: Solving Equations</div>
+                                    <div class="video-channel">Math Tutor</div>
+                                    <div class="video-meta">10 min • 950 views</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subject-bangla" class="content-section" style="display: none;">
+                        <h2>Bangla Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Master the beautiful Bengali language and literature.</p>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/g-R1N3r12_Q/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">বাংলা ব্যাকরণ: সমাস</div>
+                                    <div class="video-channel">বাংলা গুরু</div>
+                                    <div class="video-meta">14 min • 700 views</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="subject-english" class="content-section" style="display: none;">
+                        <h2>English Lessons</h2>
+                        <p style="color: rgba(255,255,255,0.7);">Improve your English grammar, vocabulary, and communication skills.</p>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <img src="https://img.youtube.com/vi/I3k8S_i9S5E/hqdefault.jpg" alt="Video Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">English Grammar: Tenses Explained</div>
+                                    <div class="video-channel">English Pro</div>
+                                    <div class="video-meta">16 min • 1.1K views</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="insights-content" class="content-section" style="display: none;">
+                        <h2>Test Exam & Insights</h2>
+                        <div class="google-form-container" id="testExamContainer">
+                            <div class="form-locked-overlay" id="testExamOverlay">
+                                <p>To unlock this test exam, you must watch the **"Introduction to Newtonian Mechanics"** video completely and 'like' it.</p>
+                                <button class="fake-like-button" id="fakeLikeButton">👍 Like Video & Unlock</button>
+                            </div>
+                            <iframe id="googleFormIframe" src="https://docs.google.com/forms/d/e/1FAIpQLSc_YdJ1f7V0Jz5Q_Q-tS9S7g-R9f6L3q0b5m2A_E_x_y_z_A/viewform?embedded=true" style="display:none;" width="640" height="480" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+                        </div>
+                    </div>
+                    
+                     <div id="settings-content" class="content-section" style="display: none;">
+                        <h2>Settings</h2>
+                        <div class="activity-card">
+                            <h3>Account Settings</h3>
+                            <p style="color: rgba(255,255,255,0.7);">Manage your profile information and preferences here.</p>
+                            <div class="login-form-group">
+                                <label for="settingName">Name</label>
+                                <input type="text" id="settingName" value="John Doe">
+                            </div>
+                            <div class="login-form-group">
+                                <label for="settingEmail">Email</label>
+                                <input type="email" id="settingEmail" value="john.doe@example.com" disabled>
+                            </div>
+                            <button class="login-button" style="width: auto;">Save Changes</button>
+                        </div>
+                        <div class="activity-card" style="margin-top: 1.5rem;">
+                            <h3>Notification Preferences</h3>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                <input type="checkbox" id="emailNotifications" checked style="width: 20px; height: 20px;">
+                                <label for="emailNotifications" style="color: rgba(255,255,255,0.7);">Email Notifications</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="smsNotifications" style="width: 20px; height: 20px;">
+                                <label for="smsNotifications" style="color: rgba(255,255,255,0.7);">SMS Notifications</label>
+                            </div>
+                            <button class="login-button" style="width: auto; margin-top: 15px;">Update Notifications</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <script>
+        // Particle background animation (from original code)
+        const particlesContainer = document.getElementById('particles');
+        const numParticles = 50;
+
+        for (let i = 0; i < numParticles; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            const size = Math.random() * 5 + 2; // Size between 2px and 7px
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            
+            const animationDuration = Math.random() * 15 + 10; // Duration between 10s and 25s
+            particle.style.animationDuration = `${animationDuration}s`;
+            
+            const animationDelay = Math.random() * 10; // Delay between 0s and 10s
+            particle.style.animationDelay = `-${animationDelay}s`; // Start at different points
+
+            particlesContainer.appendChild(particle);
+        }
+
+        // --- New JavaScript Functionality ---
+
+        // Handle Login Modal
+        const loginModal = document.getElementById('loginModal');
+        const studentLoginBtn = document.getElementById('studentLoginBtn');
+        const teacherLoginBtn = document.getElementById('teacherLoginBtn');
+        const studentLoginForm = document.getElementById('studentLoginForm');
+        const teacherLoginForm = document.getElementById('teacherLoginForm');
+        const navLoginBtn = document.getElementById('navLoginBtn');
+
+        // Show modal when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loginModal.style.display = 'flex';
+            generateSkeletonVideos(5); // Show skeleton loaders on overview
+            updateGreeting(); // Set initial greeting
+            updateSidebarActiveLink(); // Set active link based on hash
+            loadInitialVideoData(); // Simulate loading videos
+        });
+
+        navLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.style.display = 'flex';
+        });
+
+        studentLoginBtn.addEventListener('click', () => {
+            studentLoginBtn.classList.add('active');
+            teacherLoginBtn.classList.remove('active');
+            studentLoginForm.style.display = 'block';
+            teacherLoginForm.style.display = 'none';
+        });
+
+        teacherLoginBtn.addEventListener('click', () => {
+            teacherLoginBtn.classList.add('active');
+            studentLoginBtn.classList.remove('active');
+            studentLoginForm.style.display = 'none';
+            teacherLoginForm.style.display = 'block';
+        });
+
+        studentLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value;
+            const sClass = document.getElementById('studentClass').value;
+            const phone = document.getElementById('studentPhone').value;
+            const email = document.getElementById('studentEmail').value;
+
+            console.log('Student Login:', { name, class: sClass, phone, email });
+            alert(`Welcome, ${name}! A login confirmation email has been sent to ${email}.`);
+            
+            // Update user profile in dashboard
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('userRole').textContent = 'Student Account';
+            document.getElementById('settingName').value = name;
+            document.getElementById('settingEmail').value = email;
+
+            loginModal.style.display = 'none'; // Close modal on successful login
+            // You would typically send this data to a backend for authentication
+        });
+
+        teacherLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('teacherName').value;
+            const subject = document.getElementById('teacherSubject').value;
+            const email = document.getElementById('teacherEmail').value;
+            const youtubeLink = document.getElementById('teacherYoutube').value;
+
+            console.log('Teacher Login:', { name, subject, email, youtubeLink });
+            alert(`Welcome, ${name}! A login confirmation email has been sent to ${email}.`);
+
+            // Update user profile in dashboard
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+            document.getElementById('userRole').textContent = `${subject} Teacher`;
+            document.getElementById('settingName').value = name;
+            document.getElementById('settingEmail').value = email;
+
+
+            loginModal.style.display = 'none'; // Close modal on successful login
+            // You would typically send this data to a backend for authentication
+        });
+
+        // Time-based Greeting
+        function updateGreeting() {
+            const greetingText = document.getElementById('greetingText');
+            const currentHour = new Date().getHours();
+            let greeting = 'Good Evening!';
+
+            if (currentHour >= 5 && currentHour < 12) {
+                greeting = 'Good Morning!';
+            } else if (currentHour >= 12 && currentHour < 18) {
+                greeting = 'Good Afternoon!';
+            }
+            greetingText.textContent = greeting;
+        }
+
+        // Sidebar Navigation Handling
+        const navLinks = document.querySelectorAll('.sidebar .nav-link');
+        const dynamicContent = document.getElementById('dynamicContent');
+
+        function hideAllContentSections() {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+
+        function updateSidebarActiveLink() {
+            const currentHash = window.location.hash || '#overview'; // Default to overview
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentHash) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Show relevant content section
+            hideAllContentSections();
+            const targetId = currentHash.substring(1) + '-content'; // Get ID from hash
+            const subjectTargetId = currentHash.substring(1); // For subject pages
+            
+            let targetSection = document.getElementById(targetId);
+            if (!targetSection) { // If it's a subject page
+                targetSection = document.getElementById(subjectTargetId);
+            }
+
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            } else {
+                document.getElementById('overview-content').style.display = 'block'; // Fallback
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // For preventing default anchor jump if needed, but not necessary if we manually control content display
+                // e.preventDefault(); 
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                const targetId = this.getAttribute('data-target');
+                hideAllContentSections();
+                document.getElementById(targetId).style.display = 'block';
+            });
+        });
+
+        // Listen for hash changes (e.g., if user navigates with browser back/forward or directly types hash)
+        window.addEventListener('hashchange', updateSidebarActiveLink);
+
+
+        // Simulate video data
+        const videosData = [
+            { id: 'newtonian-mechanics', title: 'Introduction to Newtonian Mechanics', channel: 'Prof. Green', views: '1.2K views', duration: 600, thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg', liked: false, topic: 'physics' },
+            { id: 'electromagnetism', title: 'Electromagnetism Basics', channel: 'Dr. Spark', views: '980 views', duration: 900, thumbnail: 'https://img.youtube.com/vi/M7W1J76R9Gg/hqdefault.jpg', liked: false, topic: 'physics' },
+            { id: 'periodic-table', title: 'Periodic Table Explained', channel: 'Chem Master', views: '850 views', duration: 720, thumbnail: 'https://img.youtube.com/vi/W_Ww6R-B67o/hqdefault.jpg', liked: false, topic: 'chemistry' },
+            { id: 'cell-structure', title: 'The Cell: Structure & Functions', channel: 'Bio Guide', views: '1.5K views', duration: 1080, thumbnail: 'https://img.youtube.com/vi/eJ4zB85h1Q4/hqdefault.jpg', liked: false, topic: 'biology' },
+            { id: 'calculus-limits', title: 'Calculus: Limits & Derivatives', channel: 'Math Genius', views: '2.1K views', duration: 1500, thumbnail: 'https://img.youtube.com/vi/q_P8o9M_k-8/hqdefault.jpg', liked: false, topic: 'higher-math' },
+            { id: 'algebra-equations', title: 'Algebra: Solving Equations', channel: 'Math Tutor', views: '950 views', duration: 600, thumbnail: 'https://img.youtube.com/vi/N6wE-92M6qM/hqdefault.jpg', liked: false, topic: 'math' },
+            { id: 'bangla-shomas', title: 'বাংলা ব্যাকরণ: সমাস', channel: 'বাংলা গুরু', views: '700 views', duration: 840, thumbnail: 'https://img.youtube.com/vi/g-R1N3r12_Q/hqdefault.jpg', liked: false, topic: 'bangla' },
+            { id: 'english-tenses', title: 'English Grammar: Tenses Explained', channel: 'English Pro', views: '1.1K views', duration: 960, thumbnail: 'https://img.youtube.com/vi/I3k8S_i9S5E/hqdefault.jpg', liked: false, topic: 'english' }
+        ];
+
+        let userWatchTime = 0; // in seconds
+        let userVideosWatched = 0;
+        let isVideoWatchedAndLiked = false; // For unlocking the test
+
+        // Function to simulate video play and update progress
+        function simulateVideoPlay(videoId) {
+            const video = videosData.find(v => v.id === videoId);
+            if (video && !video.watched) {
+                userWatchTime += video.duration; // Add full duration for simulation
+                userVideosWatched++;
+                video.watched = true; // Mark as watched
+                updateMyProgress();
+                console.log(`Simulated watching "${video.title}". Total watched time: ${userWatchTime}s, Videos watched: ${userVideosWatched}`);
+
+                // Check for test exam unlock condition
+                if (video.id === 'newtonian-mechanics' && video.liked) {
+                    isVideoWatchedAndLiked = true;
+                    unlockTestExam();
+                }
+            }
+        }
+
+        // Function to update "My Progress" dashboard elements
+        function updateMyProgress() {
+            document.getElementById('totalWatchTime').textContent = formatDuration(userWatchTime);
+            document.getElementById('videosWatched').textContent = userVideosWatched;
+            // You can add more dynamic updates here
+        }
+
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours} hours ${minutes} mins`;
+        }
+
+        // Simulate "liking" a video
+        const fakeLikeButton = document.getElementById('fakeLikeButton');
+        const testExamOverlay = document.getElementById('testExamOverlay');
+        const googleFormIframe = document.getElementById('googleFormIframe');
+
+        fakeLikeButton.addEventListener('click', () => {
+            const newtonianVideo = videosData.find(v => v.id === 'newtonian-mechanics');
+            if (newtonianVideo) {
+                newtonianVideo.liked = true; // Mark as liked
+                alert(`You "liked" the "Introduction to Newtonian Mechanics" video!`);
+                simulateVideoPlay('newtonian-mechanics'); // Ensure it's marked as watched too
+                if (newtonianVideo.watched && newtonianVideo.liked) {
+                    isVideoWatchedAndLiked = true;
+                    unlockTestExam();
+                }
+            }
+        });
+
+        function unlockTestExam() {
+            if (isVideoWatchedAndLiked) {
+                testExamOverlay.style.display = 'none';
+                googleFormIframe.style.display = 'block';
+                alert('Test Exam Unlocked! Good luck!');
+            }
+        }
+
+
+        // Function to generate skeleton loaders
+        function generateSkeletonVideos(count) {
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = ''; // Clear existing
+            for (let i = 0; i < count; i++) {
+                const skeletonCard = `
+                    <div class="video-card skeleton-loader">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-info">
+                            <div class="skeleton-title"></div>
+                            <div class="skeleton-channel"></div>
+                            <div class="skeleton-meta"></div>
+                        </div>
+                    </div>
+                `;
+                videoGrid.innerHTML += skeletonCard;
+            }
+        }
+
+        // Function to load actual video data after a delay (simulating network request)
+        function loadInitialVideoData() {
+            setTimeout(() => {
+                const videoGrid = document.getElementById('videoGrid');
+                videoGrid.innerHTML = ''; // Clear skeleton loaders
+                videosData.forEach(video => {
+                    const videoCardHtml = `
+                        <div class="video-card" data-video-id="${video.id}">
+                            <div class="video-thumbnail">
+                                <img src="${video.thumbnail}" alt="${video.title}">
+                            </div>
+                            <div class="video-info">
+                                <div class="video-title">${video.title}</div>
+                                <div class="video-channel">${video.channel}</div>
+                                <div class="video-meta">${video.views}</div>
+                            </div>
+                        </div>
+                    `;
+                    videoGrid.innerHTML += videoCardHtml;
+                });
+
+                // Add event listeners to the newly created video cards
+                document.querySelectorAll('.video-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const videoId = this.getAttribute('data-video-id');
+                        simulateVideoPlay(videoId);
+                        alert(`Playing video: ${videosData.find(v => v.id === videoId).title}`);
+                        // In a real app, you'd open a video player here
+                    });
+                });
+            }, 2000); // Simulate 2 seconds loading time
+        }
+
+        // Initial setup for My Progress and Insights
+        updateMyProgress();
+        // Check if the test exam should be unlocked on page load (e.g., if user returns)
+        // For this demo, it's tied to the "like" button interaction.
+    </script>
+</body>
+</html>
